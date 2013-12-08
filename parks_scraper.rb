@@ -9,6 +9,7 @@ require 'net/https'
 require 'uri'
 require 'iconv'
 require 'mongo'
+require 'yaml'
 
 ## Import namespace
 include Mongo
@@ -35,23 +36,6 @@ class RecEvent
 end
 
 def save_event(event)
-    unique_keys = [ 'id' ]
-    # data = { 
-    #     'id' => event.id,
-    #     'title' => event.title,
-    #     'eventCategory' => event.eventCategory,
-    #     'dateRange' => event.dateRange,
-    #     'dayOfWeek' => event.dayOfWeek,
-    #     'timeOfDay' => event.timeOfDay,
-    #     'location' => event.location,
-    #     'fee' => event.fee,
-    #     'ageRange'=> event.ageRange,
-    #     'description' => event.description,
-    #     'contactNumber' => event.contactNumber,
-    #     'address' => event.address,
-    #     'mapUrl' => event.mapUrl
-    # }
-
     data = { 
         'eventId' => event.id,
         'title' => event.title,
@@ -68,30 +52,15 @@ def save_event(event)
         'eventCategory' => event.eventCategory,
         'municipality' => event.municipality
     }
-    # ScraperWiki.save_sqlite(unique_keys, data)
 
-    
-	mongo_client = MongoClient.new("ds039507.mongolab.com", "39507")
-	db = mongo_client.db("lvclass")
-	db.authenticate("lvclassweb", "lvclassweb")
+    db_config = YAML.load_file('parks_scraper.cfg')
+	puts db_config
+	mongo_client = MongoClient.new(db_config['url'], db_config['port'])
+	db = mongo_client.db(db_config['db_name'])
+	db.authenticate(db_config['username'], db_config['password'])
 	coll = db.collection('events')
 
 	coll.insert(data)
-
-   #  eventId: String,
-   # title: String,
-   # dateRange: String,
-   # dayOfWeek: String,
-   # timeOfDay: String,
-   # location: String,
-   # fee: String,
-   # ageRange: String,
-   # description: String,
-   # contactNumber: String,
-   # address: String,
-   # mapUrl: String,
-   # eventCategory: String
-
 end
 
 def post_url_contents(url, args) 
