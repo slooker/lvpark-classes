@@ -32,6 +32,7 @@ class RecEvent
         @address = address
         @mapUrl = mapUrl
         @municipality = municipality
+	@lastScrapeTime = Time.new.strftime("%Y-%m-%d %H:%M:%S")
     end
 end
 
@@ -54,7 +55,6 @@ def save_event(event)
     }
 
     db_config = YAML.load_file('parks_scraper.cfg')
-	puts db_config
 	mongo_client = MongoClient.new(db_config['url'], db_config['port'])
 	db = mongo_client.db(db_config['db_name'])
 	db.authenticate(db_config['username'], db_config['password'])
