@@ -1,2 +1,5 @@
 *.gif
 *.cfg
+*.lock
+*.swp
+*.swo
